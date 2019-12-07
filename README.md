@@ -77,7 +77,7 @@ de lo contrario se agregara el campo sin validar si el campo  unico existe en la
 __envio de datos ya sea por post,querystring o directamente__
 
 ##### Ejemplo de un insert 
-se debe emviar un modelo  con toda la data que dea agregar __"el nombre de la propiedad de  cada objeto debe ser el mismo que en el schema de su tabla "__ : 
+se debe emviar un modelo  con toda la data que desea agregar __"el nombre de la propiedad de  cada objeto debe ser el mismo que en el schema de su tabla "__ : 
 ```javascript 
   {
     email: "abdiel@plugdo.com",
@@ -91,9 +91,10 @@ se debe emviar un modelo  con toda la data que dea agregar __"el nombre de la pr
  plugdo.integration("mongo-connector", (message, send) => {
   let response = {};
 
-  var dataInsert = { 
-      email: "abdiel@plugdo.com",
-      password: "1121455e"
+  var dataInsert =  {
+    email: "abdiel@plugdo.com",
+    password: "1121455e",
+    requestedOn: new Date()
   }
 
   plugdo.collect("mongoInsert").get(dataInsert, function (data, err) {
@@ -110,6 +111,7 @@ se debe emviar un modelo  con toda la data que dea agregar __"el nombre de la pr
  La propiedad  __validateExist__ es la encargada de verificar si los datos que desea ingresar no coincidan con algunos de la tabla,   por defecto esta vacio y inserta el dato sin validar nada.
  para validar   se debe tener por lo menos un campo como __unique__ en el esquema  de lo contrario mandara error. 
 
+### Datos con fecha de expiracion
 ```javascript 
  cache: {
     field: "requestedOn",
@@ -121,15 +123,30 @@ se debe emviar un modelo  con toda la data que dea agregar __"el nombre de la pr
 Esta opción de cache es el createIndex en Mongodb __"datos con fecha de expiración"__ Para su uso se debe agregar un campo tipo  "__Date__ ejemplo  ver el schema anterior, en el collector se le pasaria a la propiedad  __cache__ el nombre del campo de tipo fecha   y los segundos 
 
 ```javascript 
-
-  var dataInsert = {
-    "email": "abdielantonio.flores@gmail.com",
-    "password": "65454694635468",
-    "requestedOn": new Date(),
+plugdo.collector("mongoTest", {
+  type: "db",
+  action: "mongodb",
+  server: {
+     user: "",
+    password: "",
+    host: "localhost:27017",
+    options: ""
+  },
+  db:"plugdoconnector",
+  collection: "plugdo",
+  queryType: "insert",
+  validateExist:true,
+   cache: {
+    field: "requestedOn",
+    seconds: 60
   }
-```
+  schema: schemaUser
+})
 
-Tambien puede colocar los segundos de manera dinamica al momento de mandar el modelo que desea guardar un ejemplo 
+```
+En el ejemplo anterior se agrega la configuración directamente en el __collect__ 
+
+Tambien puede colocar los segundos de manera dinamica al momento de mandar el modelo que desea guardar un ejemplo:
 
 ```javascript 
   var dataInsert = {
@@ -157,18 +174,20 @@ Ejemplo:
   })
 
 ```
+de las dos maneras es valido para el conector  
+
 
  ### Ejemplo para un select 
 
 La configuracion del integrador o el web Api  no cambia, se arma el modelo  de datos que queremos consultar  Ejemplo:
  ```javascript 
-  var dataInsert = { 
+  var dataSelect = { 
       email: "abdiel@plugdo.com",
   }
  ```
  se recomienda consultar por el dato que usteds coloco como __Unique__  
 
- La configuración del collector cambia 
+ La configuración del collector  es de solo agregar una propiedades nuevas ejemplo : 
  ```javascript 
 plugdo.collector("mongoTest", {
   type: "db",
