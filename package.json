@@ -5,12 +5,14 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "server": "nodemon  server.js"
   },
   "author": "Abdiel Flores",
   "license": "MIT ",
   "dependencies": {
+    "md5": "^2.2.1",
     "mongodb": "^3.3.5",
+    "nodemon": "^2.0.1",
     "plugdo-node": "^1.0.2"
   }
 }
